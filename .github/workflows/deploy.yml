@@ -1,7 +1,7 @@
 name: Deploy Quasar SPA to GitHub Pages
 on:
   push:
-    branches: [ "cicd" ] # Deploy from cicd branch
+    branches: [ "master" ] # เปลี่ยนเป็น branch ที่คุณใช้
 
 jobs:
   build-and-deploy:

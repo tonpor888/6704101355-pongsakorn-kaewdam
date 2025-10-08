@@ -1,44 +1,49 @@
 {
   "name": "6704101355-pongsakorn-kaewdam",
   "version": "0.0.1",
-  "description": "A Quasar Project",
-  "productName": "Quasar App",
-  "author": "tonpor888 <pongskon058@gmail.com>",
-  "type": "module",
+  "description": "Final Exam - Software Engineering",
+  "productName": "6704101355-pongsakorn-kaewdam",
+  "author": "Pongsakorn Kaewdam <6704101355@student.chula.ac.th>",
   "private": true,
   "scripts": {
-    "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
-    "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
-    "test": "echo \"No test specified\" && exit 0",
-    "dev": "quasar dev",
     "build": "quasar build",
-    "postinstall": "quasar prepare"
+    "dev": "quasar dev",
+    "lint": "eslint --ext .js,.ts,.vue ./",
+    "test": "echo \"See package.json => scripts for available testing scripts.\" && exit 0",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@quasar/extras": "^1.16.4",
-    "quasar": "^2.16.0",
-    "vue": "3.5.20",
-    "vue-router": "^4.0.12"
+    "@quasar/extras": "^1.16.9",
+    "quasar": "^2.14.2",
+    "vue": "^3.4.21",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
-    "@eslint/js": "^9.14.0",
-    "@playwright/test": "^1.56.0",
-    "@quasar/app-vite": "^2.1.0",
-    "@types/node": "^20.5.9",
-    "@vue/eslint-config-prettier": "^10.1.0",
-    "@vue/eslint-config-typescript": "^14.4.0",
-    "autoprefixer": "^10.4.2",
-    "eslint": "^9.14.0",
-    "eslint-plugin-vue": "^10.4.0",
-    "globals": "^16.4.0",
-    "prettier": "^3.3.3",
-    "typescript": "^5.9.2",
-    "vite-plugin-checker": "^0.10.3",
-    "vue-eslint-parser": "^10.2.0",
-    "vue-tsc": "^3.0.7"
+    "@playwright/test": "^1.40.0",
+    "@quasar/app-vite": "^1.8.0",
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.46.0",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.19.2",
+    "prettier": "^3.1.1",
+    "typescript": "~5.3.0"
   },
+  "browserslist": [
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 7 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 10 FirefoxAndroid versions",
+    "last 10 iOS versions",
+    "last 5 Samsung versions"
+  ],
   "engines": {
-    "node": "^28 || ^26 || ^24 || ^22 || ^20",
+    "node": "^20 || ^18 || ^16 || ^14",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
   }

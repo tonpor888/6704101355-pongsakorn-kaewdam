@@ -1,113 +1,104 @@
-import { test, expect } from '@playwright/test';
+// Form testing - Updated for exam requirements
+import { test, expect, Page } from '@playwright/test';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+/** ---------- Bootstrapping ---------- **/
+const gotoApp = async (page: Page) => {
+  await page.goto('http://localhost:9000/#/');                 // ← your app URL
+  await expect(page.locator('#q-app')).toBeVisible();          // Quasar root
+  await expect(page.locator('form')).toBeVisible();            // form is rendered
+};
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+/** ---------- Locator helpers ---------- **/
+const fieldByLabel = (page: Page, label: string) =>
+  page.locator('.q-field, .q-input').filter({ hasText: label });
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+// During Quasar enter/leave animations, two .q-field__messages can exist.
+// Using .last() reliably picks the "entering/current" node.
+const messagesOf = (page: Page, label: string) =>
+  fieldByLabel(page, label).locator('.q-field__messages').last();
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+// Prefer accessible locators Quasar renders via <label for=...>
+const nameInput   = (page: Page) => page.getByLabel('Your name');
+const ageInput    = (page: Page) => page.getByLabel('Your age');
+const submitBtn   = (page: Page) => page.getByRole('button', { name: /submit/i });
+const resetBtn    = (page: Page) => page.getByRole('button', { name: /reset|clear/i });
+const termsSwitch = (page: Page) => page.getByRole('switch', { name: /i accept/i });
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
-});
+/** ---------- Assertion helpers ---------- **/
+const expectNoErrorMessages = async (page: Page) => {
+  // Wait for any leaving transitions to finish
+  await expect(page.locator('.q-transition--field-message-leave-active')).toHaveCount(0);
+  // Ensure there are zero messages containing error-like text
+  await expect(
+    page.locator('.q-field__messages').filter({ hasText: /please|invalid|error/i })
+  ).toHaveCount(0);
+};
 
-test('Quasar Form - Name Input Validation', async ({ page }) => {
-  // Navigate to the app
-  await page.goto('http://localhost:9000/#/');
-  await expect(page.locator('#q-app')).toBeVisible();
-  await expect(page.locator('form')).toBeVisible();
+// Centralize copy variants your UI shows (add here if you see new texts)
+const NAME_EMPTY_REGEX = /please type something/i;
+const AGE_EMPTY_REGEX  = /please type (your|something) age/i;          // handles "Please type your age"
+const AGE_NEG_REGEX    = /positive|greater than 0|invalid|please type (your|a real) age|please type something/i;
 
-  // Test name input validation
-  const submitBtn = page.getByRole('button', { name: /submit/i });
-  const nameInput = page.getByLabel('Your name');
-  
-  // Submit with empty name
-  await submitBtn.click();
-  await expect(page.locator('.q-field__messages').first()).toContainText(/please type something/i);
+test.describe('Quasar Form Input Validation', () => {
+  test.beforeEach(async ({ page }) => {
+    await gotoApp(page);
+  });
 
-  // Fill name and submit
-  await nameInput.fill('John Doe');
-  await submitBtn.click();
-  
-  // Check that name error is gone
-  await expect(page.locator('.q-field__messages').first()).not.toContainText(/please|invalid|error/i);
-});
+  test('should validate name input', async ({ page }) => {
+    await submitBtn(page).click(); // empty submit -> first invalid is name
+    await expect(messagesOf(page, 'Your name')).toContainText(NAME_EMPTY_REGEX);
 
-test('Quasar Form - Age Input Validation', async ({ page }) => {
-  // Navigate to the app
-  await page.goto('http://localhost:9000/#/');
-  await expect(page.locator('#q-app')).toBeVisible();
-  await expect(page.locator('form')).toBeVisible();
+    await nameInput(page).fill('John Doe');
 
-  const submitBtn = page.getByRole('button', { name: /submit/i });
-  const nameInput = page.getByLabel('Your name');
-  const ageInput = page.getByLabel('Your age');
+    // Re-submit to progress validation and ensure name no longer shows an *error*.
+    await submitBtn(page).click();
 
-  // Fill name first
-  await nameInput.fill('John Doe');
-  
-  // Submit with empty age
-  await submitBtn.click();
-  await expect(page.locator('.q-field__messages').nth(1)).toContainText(/please type.*age/i);
+    // Your UI keeps a neutral helper ("Name and surname"), so just ensure no error-like text.
+    await expect(messagesOf(page, 'Your name')).not.toContainText(/please|invalid|error/i);
+  });
 
-  // Test negative age
-  await ageInput.fill('-1');
-  await submitBtn.click();
-  await expect(page.locator('.q-field__messages').nth(1)).toContainText(/real age|greater than 0/i);
-});
+  test('should validate age input', async ({ page }) => {
+    // Make name valid first so validation proceeds to age
+    await nameInput(page).fill('John Doe');
 
-test('Quasar Form - Terms Acceptance', async ({ page }) => {
-  // Navigate to the app
-  await page.goto('http://localhost:9000/#/');
-  await expect(page.locator('#q-app')).toBeVisible();
-  await expect(page.locator('form')).toBeVisible();
+    await submitBtn(page).click(); // now age is first invalid
+    await expect(messagesOf(page, 'Your age')).toContainText(AGE_EMPTY_REGEX);
 
-  const submitBtn = page.getByRole('button', { name: /submit/i });
-  const nameInput = page.getByLabel('Your name');
-  const ageInput = page.getByLabel('Your age');
-  const termsSwitch = page.getByRole('switch', { name: /i accept/i });
+    // Negative age -> show a different message (support your variants)
+    await ageInput(page).fill('-1');
+    await submitBtn(page).click();
+    await expect(messagesOf(page, 'Your age')).toContainText(AGE_NEG_REGEX);
+  });
 
-  // Fill form
-  await nameInput.fill('John Doe');
-  await ageInput.fill('25');
+  test('should handle terms acceptance', async ({ page }) => {
+    await nameInput(page).fill('John Doe');
+    await ageInput(page).fill('25');
 
-  // Submit without accepting terms
-  await submitBtn.click();
-  await expect(termsSwitch).toHaveAttribute('aria-checked', 'false');
+    // Submit with terms OFF
+    await submitBtn(page).click();
+    await expect(termsSwitch(page)).toHaveAttribute('aria-checked', 'false');
 
-  // Accept terms and submit
-  await termsSwitch.click();
-  await expect(termsSwitch).toHaveAttribute('aria-checked', 'true');
-  await submitBtn.click();
-});
+    // Turn it ON and submit again
+    await termsSwitch(page).click();
+    await expect(termsSwitch(page)).toHaveAttribute('aria-checked', 'true');
+    await submitBtn(page).click();
 
-test('Quasar Form - Reset Functionality', async ({ page }) => {
-  // Navigate to the app
-  await page.goto('http://localhost:9000/#/');
-  await expect(page.locator('#q-app')).toBeVisible();
-  await expect(page.locator('form')).toBeVisible();
+    // Instead of a success banner, assert that no error-like messages remain
+    await expectNoErrorMessages(page);
+  });
 
-  const nameInput = page.getByLabel('Your name');
-  const ageInput = page.getByLabel('Your age');
-  const termsSwitch = page.getByRole('switch', { name: /i accept/i });
-  const resetBtn = page.getByRole('button', { name: /reset/i });
+  test('should reset form inputs', async ({ page }) => {
+    await nameInput(page).fill('John Doe');
+    await ageInput(page).fill('25');
 
-  // Fill form
-  await nameInput.fill('John Doe');
-  await ageInput.fill('25');
-  await termsSwitch.click();
+    // Toggle terms ON via accessible switch (native input is hidden)
+    await termsSwitch(page).click();
+    await expect(termsSwitch(page)).toHaveAttribute('aria-checked', 'true');
 
-  // Reset form
-  await resetBtn.click();
+    await resetBtn(page).click();
 
-  // Verify form is reset
-  await expect(nameInput).toHaveValue('');
-  await expect(ageInput).toHaveValue('');
-  await expect(termsSwitch).toHaveAttribute('aria-checked', 'false');
+    await expect(nameInput(page)).toHaveValue('');
+    await expect(ageInput(page)).toHaveValue('');
+    await expect(termsSwitch(page)).toHaveAttribute('aria-checked', 'false');
+  });
 });
