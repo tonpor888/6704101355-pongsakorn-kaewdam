@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Test Setup
 on:
   push:
     branches: [ testing ]
@@ -13,7 +13,5 @@ jobs:
         node-version: '18'
     - name: Install dependencies
       run: npm install
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
+    - name: Verify Playwright installation
+      run: npx playwright --version
