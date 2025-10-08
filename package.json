@@ -1,0 +1,50 @@
+{
+  "name": "6704101355-pongsakorn-kaewdam",
+  "version": "0.0.1",
+  "description": "Final Exam - Software Engineering",
+  "productName": "6704101355-pongsakorn-kaewdam",
+  "author": "Pongsakorn Kaewdam <6704101355@student.chula.ac.th>",
+  "private": true,
+  "scripts": {
+    "build": "quasar build",
+    "dev": "quasar dev",
+    "lint": "eslint --ext .js,.ts,.vue ./",
+    "test": "echo \"See package.json => scripts for available testing scripts.\" && exit 0",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.16.9",
+    "quasar": "^2.14.2",
+    "vue": "^3.4.21",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@quasar/app-vite": "^1.8.0",
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.46.0",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.19.2",
+    "prettier": "^3.1.1",
+    "typescript": "~5.3.0"
+  },
+  "browserslist": [
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 7 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 10 FirefoxAndroid versions",
+    "last 10 iOS versions",
+    "last 5 Samsung versions"
+  ],
+  "engines": {
+    "node": "^20 || ^18 || ^16 || ^14",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}
