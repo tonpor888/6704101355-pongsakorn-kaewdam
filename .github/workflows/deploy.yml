@@ -25,7 +25,9 @@ jobs:
         run: npm ci
 
       - name: Build Quasar SPA
-        run: npx quasar build
+        run: |
+          npm install -g @quasar/cli
+          npx quasar build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
