@@ -101,7 +101,7 @@ export default defineConfig((/* ctx */) => {
 
       // Quasar plugins
       plugins: [
-        ['Notify']
+        ['Notify'] // Updated for exam requirements
       ],
     },
 
