@@ -7,7 +7,9 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Allow pushing to gh-pages
+      contents: read
+      pages: write
+      id-token: write
 
     steps:
       - name: Checkout repository
@@ -24,8 +26,14 @@ jobs:
       - name: Build Quasar SPA
         run: npx quasar build
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{secrets.GITHUB_TOKEN}}  # 🔒 Use built-in GitHub token
-          publish_dir: dist/spa
+          path: dist/spa
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
