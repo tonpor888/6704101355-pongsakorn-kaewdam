@@ -41,3 +41,8 @@ quasar build
 ### Customize the configuration
 
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+
+## GitHub Pages Deployment
+
+This project is configured for automatic deployment to GitHub Pages.
+- Live website: https://tonpor888.github.io/6704101355-Pongsakorn-Kaewdam/
