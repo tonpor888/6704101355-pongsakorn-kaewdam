@@ -17,10 +17,6 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: Start Quasar dev server
-      run: |
-        npm run dev &
-        sleep 10
     - name: Run Playwright tests
       run: npx playwright test --reporter=github
     - uses: actions/upload-artifact@v4
