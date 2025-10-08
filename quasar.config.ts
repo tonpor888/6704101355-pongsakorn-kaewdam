@@ -50,7 +50,9 @@ export default defineConfig((/* ctx */) => {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      publicPath: '/6704101355-Pongsakorn-Kaewdam/',
+      publicPath: process.env.NODE_ENV === 'production' 
+        ? '/6704101355-Pongsakorn-Kaewdam/' 
+        : '/',
       // analyze: true,
       // env: {},
       // rawDefine: {}
@@ -98,7 +100,7 @@ export default defineConfig((/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify'],
+      plugins: [],
     },
 
     // animations: 'all', // --- includes all animations
